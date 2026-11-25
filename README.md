@@ -1,26 +1,48 @@
-# 🎬 Anime Editorial Scoring : Data Science Project
+<p align="center"><img src="banner.svg" alt="Anime Editorial Scoring" width="100%"></p>
 
- 🎯 Objectif du Projet
-Développer un outil d'aide à la décision pour une plateforme de streaming.
-L'objectif est d'identifier les animes à **"Haute Valeur Éditoriale"** en ne se basant pas seulement sur la popularité, mais sur la **fiabilité technique** (Régularité).
+Une plateforme de streaming veut savoir quelles séries mettre en avant. Le problème : une série très bien notée peut avoir des épisodes très inégaux. J'ai donc construit **un score qui compte aussi la régularité**.
 
- 📊 Méthodologie
-Ce projet suit un workflow Data Science complet :
-1. **Data Cleaning :** Nettoyage des données aberrantes (notes à 0, animes trop récents).
-2. **Feature Engineering :** Création de métriques de stabilité :
-   - `Ecart` : Différence entre le meilleur et le pire épisode.
-   - `Regularite` : Score inversé sur 10.
-3. **Scoring :** Création du `Score_Qualite` (60% Note Globale + 40% Régularité).
+**Étude de cas :** [portfolio-ay-kh.netlify.app/project-anime-scoring](https://portfolio-ay-kh.netlify.app/project-anime-scoring.html)
 
-🏆 Résultats Clés
-- **Studio Leader :** L'analyse a révélé que le studio **Artland** offre la meilleure garantie de qualité moyenne, surpassant les géants du secteur.
-- **Top Anime :** L'algorithme a permis de classer *Frieren* et *Claymore* comme des investissements sûrs.
-- **Insight Métier :** Une corrélation négative a été observée entre la longueur d'un anime et sa régularité.
+## Le calcul
 
- 🛠 Outils Utilisés
-- **Python** (Pandas, NumPy)
-- **Data Visualization** (Seaborn, Matplotlib)
-- **Jupyter Notebook**
+```python
+# écart entre le meilleur et le pire épisode
+df['Ecart'] = df['Note_Meilleur_Ep'] - df['Note_Pire_Ep']
 
----
-*Projet réalisé dans le cadre de ma formation Data chez Hetic.*
+# plus c'est proche de 10, plus la série est régulière
+df['Regularite'] = 10 - df['Ecart']
+
+# 60 % note du public, 40 % régularité
+df['Score_Qualite'] = 0.6 * df['Note_Globale'] + 0.4 * df['Regularite']
+```
+
+## Le top 5
+
+| # | Série | Score | Note publique | Régularité |
+|:-:|---|:-:|:-:|:-:|
+| 1 | Frieren: Beyond Journey's End | **8,74** | 9,3 | 7,9 |
+| 2 | Your Lie in April | **8,72** | 8,6 | 8,9 |
+| 3 | Steins;Gate | **8,70** | 9,1 | 8,1 |
+| 4 | Vinland Saga | **8,68** | 8,8 | 8,5 |
+| 5 | Mushishi | **8,66** | 8,7 | 8,6 |
+
+Your Lie in April passe devant Steins;Gate alors que le public le note moins bien : c'est sa régularité qui fait la différence.
+
+- Le studio le plus régulier en moyenne : **Artland**.
+- Plus une série est longue, moins elle est régulière.
+- **Frieren** et **Claymore** ressortent comme des valeurs sûres.
+
+<p align="center"><img src="visuels/anime-matrice.webp" width="70%" alt="Note du public contre score calculé"></p>
+
+## Les fichiers
+
+| Fichier | Contenu |
+|---|---|
+| `Untitled1.ipynb` | Le notebook : nettoyage, nouvelles colonnes, score, graphiques |
+| `clean_data_set.csv` | Les 72 séries après nettoyage |
+| `animes_final_score.csv` | Le résultat avec le score de chaque série |
+
+## Outils
+
+Python, Pandas, NumPy, Seaborn, Matplotlib, Jupyter.
